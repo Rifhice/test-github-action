@@ -22,6 +22,10 @@ const main = async () => {
     );
     console.log("Commits to check", commitsToCheck);
 
+    await exec.exec(await which("npm", true), ["install"], {
+      cwd: getCWD(),
+    });
+
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
@@ -50,7 +54,6 @@ const main = async () => {
           await which("npm", true),
           ["run", "test"],
           {
-            ignoreReturnCode: true,
             cwd: getCWD() + path,
           }
         );
