@@ -22,8 +22,8 @@ const main = async () => {
     );
     console.log("Commits to check", commitsToCheck);
 
-    await exec.exec(await which("npm", true), ["install"], {
-      cwd: getCWD(),
+    await exec.exec(await which("npm", true), ["run", "test"], {
+      cwd: getCWD() + "/a",
     });
 
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
@@ -54,7 +54,7 @@ const main = async () => {
           await which("npm", true),
           ["run", "test"],
           {
-            cwd: getCWD() + path,
+            cwd: getCWD() + "/" + path,
           }
         );
         console.log(testResult);
