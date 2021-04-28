@@ -2,6 +2,11 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const exec = require("@actions/exec");
 
+function getCWD() {
+  const { GITHUB_WORKSPACE = ".", SOURCE = "." } = process.env;
+  return `${GITHUB_WORKSPACE}/${SOURCE}`;
+}
+
 const main = async () => {
   try {
     // `who-to-greet` input defined in action metadata file
