@@ -61,24 +61,23 @@ const main = async () => {
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
+    const separator = "%separator%";
+
     const rawLast100Commits = await execute(
       "git",
-      ["log", "--format=%H", "-n 100"],
+      ["log", `--format="%H${separator}%B"`, "-n 100"],
       {
         cwd: getCWD(),
       }
     );
-    const last100Commits = rawLast100Commits.split("\n");
+    const last100Commits = rawLast100Commits.split("\n").map((commit) => {
+      const [name, commit] = commit.split(separator);
+      return {
+        name,
+        commit,
+      };
+    });
     console.log("Last 100 commits", last100Commits.length, last100Commits);
-
-    const commitMessage = await execute(
-      "git",
-      ["log", "--format=%B", "-n 1", lastCommit],
-      {
-        cwd: getCWD(),
-      }
-    );
-    console.log("Commit message", commitMessage);
 
     const changedServices = [];
     for (const service of services) {
