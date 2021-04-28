@@ -1,6 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const exec = require("@actions/exec");
+const { which } = require("@actions/io");
 
 function getCWD() {
   const { GITHUB_WORKSPACE = ".", SOURCE = "." } = process.env;
@@ -45,10 +46,14 @@ const main = async () => {
       );
 
       if (exitCode === 1) {
-        const testResult = await exec.exec("npm", ["run", "test"], {
-          ignoreReturnCode: true,
-          cwd: getCWD() + path,
-        });
+        const testResult = await exec.exec(
+          await which("npm", true),
+          ["run", "test"],
+          {
+            ignoreReturnCode: true,
+            cwd: getCWD() + path,
+          }
+        );
         console.log(testResult);
       }
     }
