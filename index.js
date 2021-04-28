@@ -58,14 +58,15 @@ const main = async () => {
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
-    const last100Commits = await execute(
+    const rawLast100Commits = await execute(
       "git",
       ["log", "--format=%H", "-n 100"],
       {
         cwd: getCWD(),
       }
     );
-    console.log("Last 100 commits", last100Commits);
+    const last100Commits = rawLast100Commits.split("\n");
+    console.log("Last 100 commits", last100Commits.length, last100Commits);
 
     const commitMessage = await execute(
       "git",
