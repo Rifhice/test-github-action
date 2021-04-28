@@ -18,7 +18,7 @@ try {
   for await (const commitId of commitsToCheck) {
     const exitCode = await exec.exec(
       "git",
-      ["diff", "--quiet", commitId, "--", ...paths],
+      ["diff", "--quiet", commitId, "--", "a/"],
       {
         ignoreReturnCode: true,
         silent: false,
