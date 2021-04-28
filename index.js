@@ -21,8 +21,8 @@ const main = async () => {
     );
     console.log("Commits to check", commitsToCheck);
 
-    //  --quiet: exits with 1 if there were differences (https://git-scm.com/docs/git-diff)
     for await (const commitId of commitsToCheck) {
+      //  --quiet: exits with 1 if there were differences (https://git-scm.com/docs/git-diff)
       const exitCode = await exec.exec(
         "git",
         ["diff", "--quiet", commitId, "--", "a/"],
@@ -33,6 +33,14 @@ const main = async () => {
         }
       );
       console.log("Commit", commitId, "ended diff in", exitCode);
+
+      if (exitCode === 1) {
+        const testResult = await exec.exec("npm", ["run", "test"], {
+          ignoreReturnCode: true,
+          cwd: getCWD() + "/a",
+        });
+        console.log(testResult);
+      }
     }
 
     console.log(`The event payload: ${payload}`);
