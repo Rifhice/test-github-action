@@ -21,6 +21,15 @@ const wasChanged = async ({ path, firstCommit, lastCommit }) => {
   return exitCode === 1;
 };
 
+const services = [
+  {
+    path: "a/",
+  },
+  {
+    path: "b/",
+  },
+];
+
 const main = async () => {
   try {
     // `who-to-greet` input defined in action metadata file
@@ -38,9 +47,18 @@ const main = async () => {
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
-    const paths = ["a/", "b/"];
+    const commitMessage = await exec.exec(
+      "git",
+      ["log", "--format=%B", "-n 1", lastCommit],
+      {
+        cwd: getCWD() + "/" + path,
+      }
+    );
+    console.log("Commit message", commitMessage);
 
-    for (const path of paths) {
+    const changedServices = [];
+    for (const service of services) {
+      const { path } = service;
       const pathWasChanged = await wasChanged({
         path,
         firstCommit: previousCommit,
@@ -48,17 +66,21 @@ const main = async () => {
       });
       console.log("Was path", path, "changed", pathWasChanged);
 
-      if (pathWasChanged) {
-        const testResult = await exec.exec(
-          await which("npm", true),
-          ["run", "test"],
-          {
-            cwd: getCWD() + "/" + path,
-          }
-        );
-        console.log(testResult);
-      }
+      if (pathWasChanged) changedServices.push(service);
     }
+
+    // Test all changed services
+    // Deploy all changed services to heroku
+    // In case of failure in a deployment, revert the other services
+
+    const testResult = await exec.exec(
+      await which("npm", true),
+      ["run", "test"],
+      {
+        cwd: getCWD() + "/" + path,
+      }
+    );
+    console.log(testResult);
 
     console.log(`The event payload: ${payload}`);
   } catch (error) {
