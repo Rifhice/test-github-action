@@ -21,23 +21,33 @@ const main = async () => {
     );
     console.log("Commits to check", commitsToCheck);
 
-    for await (const commitId of commitsToCheck) {
-      //  --quiet: exits with 1 if there were differences (https://git-scm.com/docs/git-diff)
+    const lastCommit = commitsToCheck[commitsToCheck.length - 1];
+    const previousCommit = github.context.payload.before;
+
+    const paths = ["a/", "b/"];
+
+    for (const path of paths) {
       const exitCode = await exec.exec(
         "git",
-        ["diff", "--quiet", commitId, "--", "a/"],
+        ["diff", "--quiet", previousCommit, lastCommit, "--", path],
         {
           ignoreReturnCode: true,
           silent: false,
           cwd: getCWD(),
         }
       );
-      console.log("Commit", commitId, "ended diff in", exitCode);
+      console.log(
+        "Difference for path",
+        path,
+        exitCode === 1,
+        "ended diff in",
+        exitCode
+      );
 
       if (exitCode === 1) {
         const testResult = await exec.exec("npm", ["run", "test"], {
           ignoreReturnCode: true,
-          cwd: getCWD() + "/a",
+          cwd: getCWD() + path,
         });
         console.log(testResult);
       }
