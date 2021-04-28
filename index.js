@@ -8,6 +8,19 @@ function getCWD() {
   return `${GITHUB_WORKSPACE}/${SOURCE}`;
 }
 
+const wasChanged = async ({ path, firstCommit, lastCommit }) => {
+  const exitCode = await exec.exec(
+    "git",
+    ["diff", "--quiet", firstCommit, lastCommit, "--", path],
+    {
+      ignoreReturnCode: true,
+      silent: false,
+      cwd: getCWD(),
+    }
+  );
+  return exitCode === 1;
+};
+
 const main = async () => {
   try {
     // `who-to-greet` input defined in action metadata file
@@ -22,34 +35,20 @@ const main = async () => {
     );
     console.log("Commits to check", commitsToCheck);
 
-    await exec.exec(await which("npm", true), ["run", "test"], {
-      cwd: getCWD() + "/a",
-    });
-
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
     const paths = ["a/", "b/"];
 
     for (const path of paths) {
-      const exitCode = await exec.exec(
-        "git",
-        ["diff", "--quiet", previousCommit, lastCommit, "--", path],
-        {
-          ignoreReturnCode: true,
-          silent: false,
-          cwd: getCWD(),
-        }
-      );
-      console.log(
-        "Difference for path",
+      const pathWasChanged = await wasChanged({
         path,
-        exitCode === 1,
-        "ended diff in",
-        exitCode
-      );
+        firstCommit: previousCommit,
+        lastCommit,
+      });
+      console.log("Was path", path, "changed", pathWasChanged);
 
-      if (exitCode === 1) {
+      if (pathWasChanged) {
         const testResult = await exec.exec(
           await which("npm", true),
           ["run", "test"],
