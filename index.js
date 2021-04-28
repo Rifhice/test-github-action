@@ -70,13 +70,16 @@ const main = async () => {
         cwd: getCWD(),
       }
     );
-    const last100Commits = rawLast100Commits.split("\n").map((commit) => {
-      const [name, commitId] = commit.split(separator);
-      return {
-        name,
-        commitId,
-      };
-    });
+    const last100Commits = rawLast100Commits
+      .split("\n")
+      .filter((line) => !!line.trim())
+      .map((commit) => {
+        const [name, commitId] = commit.split(separator);
+        return {
+          name,
+          commitId,
+        };
+      });
     console.log("Last 100 commits", last100Commits.length, last100Commits);
 
     const changedServices = [];
