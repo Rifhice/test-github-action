@@ -51,7 +51,7 @@ const main = async () => {
       "git",
       ["log", "--format=%B", "-n 1", lastCommit],
       {
-        cwd: getCWD() + "/" + path,
+        cwd: getCWD(),
       }
     );
     console.log("Commit message", commitMessage);
