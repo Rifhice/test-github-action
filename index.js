@@ -8,6 +8,17 @@ function getCWD() {
   return `${GITHUB_WORKSPACE}/${SOURCE}`;
 }
 
+const execute = (command, args, options = {}) => {
+  return new Promise((resolve) => {
+    exec.exec(command, args, {
+      ...options,
+      listeners: {
+        stdout: (data) => resolve(data.toString()),
+      },
+    });
+  });
+};
+
 const wasChanged = async ({ path, firstCommit, lastCommit }) => {
   const exitCode = await exec.exec(
     "git",
@@ -47,16 +58,16 @@ const main = async () => {
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
-    const last100Commits = await exec.exec(
+    const last100Commits = await execute(
       "git",
-      ["log", "--format=%H", "-n 1", lastCommit],
+      ["log", "--format=%H", "-n 100"],
       {
         cwd: getCWD(),
       }
     );
     console.log("Last 100 commits", last100Commits);
 
-    const commitMessage = await exec.exec(
+    const commitMessage = await execute(
       "git",
       ["log", "--format=%B", "-n 1", lastCommit],
       {
