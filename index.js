@@ -61,7 +61,7 @@ const main = async () => {
     const lastCommit = commitsToCheck[commitsToCheck.length - 1];
     const previousCommit = github.context.payload.before;
 
-    const separator = "%separator%";
+    const separator = "#separator#";
 
     const rawLast100Commits = await execute(
       "git",
