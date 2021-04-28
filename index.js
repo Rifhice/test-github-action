@@ -65,7 +65,7 @@ const main = async () => {
 
     const rawLast100Commits = await execute(
       "git",
-      ["log", `--format="%H${separator}%B"`, "-n 100"],
+      ["log", `--format=%H${separator}%B`, "-n 100"],
       {
         cwd: getCWD(),
       }
