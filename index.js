@@ -71,10 +71,10 @@ const main = async () => {
       }
     );
     const last100Commits = rawLast100Commits.split("\n").map((commit) => {
-      const [name, commit] = commit.split(separator);
+      const [name, commitId] = commit.split(separator);
       return {
         name,
-        commit,
+        commitId,
       };
     });
     console.log("Last 100 commits", last100Commits.length, last100Commits);
