@@ -9,13 +9,16 @@ function getCWD() {
 }
 
 const execute = (command, args, options = {}) => {
+  let myOutput = "";
   return new Promise((resolve) => {
-    exec.exec(command, args, {
-      ...options,
-      listeners: {
-        stdout: (data) => resolve(data.toString()),
-      },
-    });
+    exec
+      .exec(command, args, {
+        ...options,
+        listeners: {
+          stdout: (data) => (myOutput += data.toString()),
+        },
+      })
+      .then(() => resolve(myOutput));
   });
 };
 
