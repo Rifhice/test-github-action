@@ -44,22 +44,31 @@ const services = [
   },
 ];
 
+const extractBranchNameFromCommitMessage = (name) => {
+  return commit.message.match(/\[(.*?)\]/)?.[1];
+};
+
 const main = async () => {
   try {
-    // `who-to-greet` input defined in action metadata file
-    const nameToGreet = core.getInput("who-to-greet");
-    console.log(`Hello ${nameToGreet}!`);
-    const time = new Date().toTimeString();
-    core.setOutput("time", time);
-    // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2);
-    const commitsToCheck = github.context.payload.commits.map(
-      (commit) => commit.id
-    );
+
+    const commitsToCheck = github.context.payload.commits.map((commit) => ({
+      branchName: extractBranchNameFromCommitMessage(commit.message),
+      id: commit.id,
+    }));
+
     console.log("Commits to check", commitsToCheck);
 
-    const lastCommit = commitsToCheck[commitsToCheck.length - 1];
-    const previousCommit = github.context.payload.before;
+    const branchesToCheck = [
+      ...new Set(
+        commitsToCheck
+          .map((commit) => commit.branchName)
+          .filter((branchName) => branchName)
+      ),
+    ];
+
+    // const lastCommit = commitsToCheck[commitsToCheck.length - 1];
+    // const previousCommit = github.context.payload.before;
 
     const separator = "#separator#";
 
@@ -76,11 +85,22 @@ const main = async () => {
       .map((commit) => {
         const [name, commitId] = commit.split(separator);
         return {
-          name,
+          branchName: extractBranchNameFromCommitMessage(name),
           commitId,
         };
       });
     console.log("Last 100 commits", last100Commits.length, last100Commits);
+
+    const commitsToCheckPerBranch = branchesToCheck.reduce((acc, branch) => {
+      return {
+        ...acc,
+        [branch]: last100Commits.filter(
+          (commit) => commit?.branchName && commit.branchName === branch
+        ),
+      };
+    }, {});
+
+    console.log("Commits to check per branch", commitsToCheckPerBranch);
 
     const changedServices = [];
     for (const service of services) {
