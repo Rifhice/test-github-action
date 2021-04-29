@@ -28,7 +28,7 @@ const wasChanged = async ({ path, firstCommit, lastCommit }) => {
     ["diff", "--quiet", firstCommit, lastCommit, "--", path],
     {
       ignoreReturnCode: true,
-      silent: false,
+      silent: true,
       cwd: getCWD(),
     }
   );
