@@ -28,7 +28,7 @@ const wasChanged = async ({ path, firstCommit, lastCommit }) => {
     ["diff", "--quiet", firstCommit, lastCommit, "--", path],
     {
       ignoreReturnCode: true,
-      silent: true,
+      silent: false,
       cwd: getCWD(),
     }
   );
@@ -78,6 +78,7 @@ const main = async () => {
       ["log", `--format=%H${separator}%s`, "-n 100"],
       {
         cwd: getCWD(),
+        silent: true,
       }
     );
     const last100Commits = rawLast100Commits
