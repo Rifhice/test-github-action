@@ -84,7 +84,7 @@ const main = async () => {
       .split("\n")
       .filter((line) => !!line.trim())
       .map((commit) => {
-        const [name, commitId] = commit.split(separator);
+        const [commitId, name] = commit.split(separator);
         return {
           branchName: extractBranchNameFromCommitMessage(name),
           commitId,
