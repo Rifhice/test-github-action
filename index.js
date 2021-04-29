@@ -101,6 +101,10 @@ const main = async () => {
       };
     }, {});
 
+    commitsToCheckPerBranch["no-branch-related"] = commitsToCheck.filter(
+      (commit) => !commit.branchName
+    );
+
     console.log("Commits to check per branch", commitsToCheckPerBranch);
 
     const changedServices = [];
