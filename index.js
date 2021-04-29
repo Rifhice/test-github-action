@@ -22,10 +22,18 @@ const execute = (command, args, options = {}) => {
   });
 };
 
-const wasChanged = async ({ path, firstCommit, lastCommit }) => {
+const wasChanged = async ({ path, commit }) => {
   const exitCode = await exec.exec(
     "git",
-    ["diff", "--quiet", firstCommit, lastCommit, "--", path],
+    [
+      "diff-tree",
+      "--no-commit-id",
+      "--name-only",
+      "-r",
+      "--quiet",
+      commit,
+      path,
+    ],
     {
       ignoreReturnCode: true,
       silent: false,
@@ -91,7 +99,7 @@ const main = async () => {
           commitId,
         };
       });
-    console.log("Last 100 commits", last100Commits.length, last100Commits);
+    console.log("Last", last100Commits.length, "commits", last100Commits);
 
     const commitsToCheckPerBranch = branchesToCheck.reduce((acc, branch) => {
       return {
@@ -111,14 +119,17 @@ const main = async () => {
     const changedServices = [];
     for (const service of services) {
       const { path } = service;
-      const pathWasChanged = await wasChanged({
-        path,
-        firstCommit: previousCommit,
-        lastCommit,
-      });
-      console.log("Was path", path, "changed", pathWasChanged);
+      const commits = Object.values(commitsToCheckPerBranch).flat(1);
+      for (const commit of commits) {
+        const pathWasChanged = await wasChanged({
+          path,
+          commit,
+        });
+        console.log("Was path", path, "changed", pathWasChanged);
 
-      if (pathWasChanged) changedServices.push(service);
+        if (pathWasChanged && !changedServices.includes(service))
+          changedServices.push(service);
+      }
     }
 
     // Test all changed services
