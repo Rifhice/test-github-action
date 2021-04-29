@@ -93,10 +93,10 @@ const main = async () => {
       .split("\n")
       .filter((line) => !!line.trim())
       .map((commit) => {
-        const [commitId, name] = commit.split(separator);
+        const [id, name] = commit.split(separator);
         return {
           branchName: extractBranchNameFromCommitMessage(name),
-          commitId,
+          id,
         };
       });
     console.log("Last", last100Commits.length, "commits", last100Commits);
@@ -123,7 +123,7 @@ const main = async () => {
       for (const commit of commits) {
         const pathWasChanged = await wasChanged({
           path,
-          commit: commit.commidId,
+          commit: commit.id,
         });
         console.log("Was path", path, "changed", pathWasChanged);
 
