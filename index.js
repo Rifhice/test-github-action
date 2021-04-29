@@ -45,7 +45,8 @@ const services = [
 ];
 
 const extractBranchNameFromCommitMessage = (name) => {
-  return commit.message.match(/\[(.*?)\]/)?.[1];
+  const result = name.match(/\[(.*?)\]/);
+  return result !== null ? result[1] : undefined;
 };
 
 const main = async () => {
@@ -95,7 +96,7 @@ const main = async () => {
       return {
         ...acc,
         [branch]: last100Commits.filter(
-          (commit) => commit?.branchName && commit.branchName === branch
+          (commit) => commit.branchName && commit.branchName === branch
         ),
       };
     }, {});
