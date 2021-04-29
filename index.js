@@ -132,18 +132,20 @@ const main = async () => {
       }
     }
 
+    console.log("Services to check", changedServices);
+
     // Test all changed services
     // Deploy all changed services to heroku
     // In case of failure in a deployment, revert the other services
 
-    const testResult = await exec.exec(
-      await which("npm", true),
-      ["run", "test"],
-      {
-        cwd: getCWD() + "/" + path,
-      }
-    );
-    console.log(testResult);
+    // const testResult = await exec.exec(
+    //   await which("npm", true),
+    //   ["run", "test"],
+    //   {
+    //     cwd: getCWD() + "/" + path,
+    //   }
+    // );
+    // console.log(testResult);
 
     console.log(`The event payload: ${payload}`);
   } catch (error) {
