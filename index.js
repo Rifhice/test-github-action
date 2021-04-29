@@ -123,7 +123,7 @@ const main = async () => {
       for (const commit of commits) {
         const pathWasChanged = await wasChanged({
           path,
-          commit,
+          commit: commit.commidId,
         });
         console.log("Was path", path, "changed", pathWasChanged);
 
