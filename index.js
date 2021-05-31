@@ -62,7 +62,7 @@ const main = async () => {
     const payload = JSON.stringify(github.context.payload, undefined, 2);
 
     const file = await new Promise((resolve) =>
-      fs.readFile("elise.json", (err, data) => resolve(data.toString()))
+      fs.readFile("elise.json", (err, data) => resolve(data && data.toString()))
     );
 
     console.log(file);
