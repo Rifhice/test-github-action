@@ -58,7 +58,8 @@ const main = async () => {
 
     if (file === undefined) throw new Error("No config file found");
 
-    const services = JSON.parse(file);
+    const config = JSON.parse(file);
+    const { services } = config;
 
     console.log(services);
 
