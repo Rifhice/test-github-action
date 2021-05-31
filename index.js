@@ -134,11 +134,13 @@ const main = async () => {
 
     console.log("Services to check", changedServices);
 
-    console.log(
-      await execute("sh", [services[0].ci.file], {
-        cwd: path.join(getCWD(), services[0].path),
-      })
-    );
+    for await (const service of services) {
+      const result = await execute("sh", [service.ci.file], {
+        cwd: path.join(getCWD(), service.path),
+        silent: true,
+      });
+      console.log(result);
+    }
 
     // Test all changed services
     // Deploy all changed services to heroku
