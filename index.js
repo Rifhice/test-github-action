@@ -43,15 +43,6 @@ const wasChanged = async ({ path, commit }) => {
   return exitCode === 1;
 };
 
-const services = [
-  {
-    path: "a/",
-  },
-  {
-    path: "b/",
-  },
-];
-
 const extractBranchNameFromCommitMessage = (name) => {
   const result = name.match(/\[(.*?)\]/);
   return result !== null ? result[1] : undefined;
@@ -65,7 +56,11 @@ const main = async () => {
       fs.readFile("elise.json", (err, data) => resolve(data && data.toString()))
     );
 
-    console.log(file);
+    if (file === undefined) throw new Error("No config file found");
+
+    const services = JSON.parse(file);
+
+    console.log(services);
 
     const commitsToCheck = github.context.payload.commits.map((commit) => ({
       branchName: extractBranchNameFromCommitMessage(commit.message),
@@ -136,6 +131,8 @@ const main = async () => {
     }
 
     console.log("Services to check", changedServices);
+
+    console.log(await execute("sh", [services[0].ci.path]));
 
     // Test all changed services
     // Deploy all changed services to heroku
