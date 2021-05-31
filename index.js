@@ -135,16 +135,12 @@ const main = async () => {
     console.log("Services to check", changedServices);
 
     for await (const service of services) {
-      try {
-        const returnCode = await exec.exec("sh", [service.ci.file], {
-          cwd: path.join(getCWD(), service.path),
-          ignoreReturnCode: true,
-          silent: true,
-        });
-        console.log({ returnCode });
-        console.log(`CI succeeded for ${service}`);
-      } catch {
-        console.log(`CI failed for ${service}`);
+      const returnCode = await exec.exec("sh", [service.ci.file], {
+        cwd: path.join(getCWD(), service.path),
+        ignoreReturnCode: true,
+      });
+      if (returnCode > 0) {
+        throw new Error(`CI failed for ${service.name}`);
       }
     }
 
