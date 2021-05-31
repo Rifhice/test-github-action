@@ -137,7 +137,6 @@ const main = async () => {
     for await (const service of services) {
       const result = await execute("sh", [service.ci.file], {
         cwd: path.join(getCWD(), service.path),
-        silent: true,
       });
       console.log(result);
     }
