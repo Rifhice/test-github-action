@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const exec = require("@actions/exec");
-const { which } = require("@actions/io");
+const fs = require("fs");
 
 function getCWD() {
   const { GITHUB_WORKSPACE = ".", SOURCE = "." } = process.env;
@@ -36,7 +36,7 @@ const wasChanged = async ({ path, commit }) => {
     ],
     {
       ignoreReturnCode: true,
-      silent: false,
+      silent: true,
       cwd: getCWD(),
     }
   );
@@ -61,6 +61,12 @@ const main = async () => {
   try {
     const payload = JSON.stringify(github.context.payload, undefined, 2);
 
+    const file = await new Promise((resolve) =>
+      fs.readFile("elise.json").then((res) => resolve(res))
+    );
+
+    console.log(file);
+
     const commitsToCheck = github.context.payload.commits.map((commit) => ({
       branchName: extractBranchNameFromCommitMessage(commit.message),
       id: commit.id,
@@ -75,9 +81,6 @@ const main = async () => {
           .filter((branchName) => branchName)
       ),
     ];
-
-    // const lastCommit = commitsToCheck[commitsToCheck.length - 1];
-    // const previousCommit = github.context.payload.before;
 
     const separator = "#separator#";
 
