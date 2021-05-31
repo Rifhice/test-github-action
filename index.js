@@ -135,11 +135,14 @@ const main = async () => {
     console.log("Services to check", changedServices);
 
     for await (const service of services) {
-      const result = await execute("sh", [service.ci.file], {
-        cwd: path.join(getCWD(), service.path),
-        silent: true,
-      });
-      console.log({ result });
+      try {
+        await execute("sh", [service.ci.file], {
+          cwd: path.join(getCWD(), service.path),
+        });
+        console.log(`CI succeeded for ${service}`);
+      } catch {
+        console.log(`CI failed for ${service}`);
+      }
     }
 
     // Test all changed services
