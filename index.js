@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const exec = require("@actions/exec");
 const fs = require("fs");
+const path = require("path");
 
 function getCWD() {
   const { GITHUB_WORKSPACE = ".", SOURCE = "." } = process.env;
