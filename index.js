@@ -136,7 +136,7 @@ const main = async () => {
 
     for await (const service of services) {
       try {
-        const returnCode = await execute("sh", [service.ci.file], {
+        const returnCode = await exec.exec("sh", [service.ci.file], {
           cwd: path.join(getCWD(), service.path),
           ignoreReturnCode: true,
           silent: true,
